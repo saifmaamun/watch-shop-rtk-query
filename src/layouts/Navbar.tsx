@@ -12,8 +12,20 @@ import {
 import { HiOutlineSearch } from 'react-icons/hi';
 import Cart from '../components/Cart';
 import logo from '../assets/images/technet-logo.png';
+import { useAppDispatch, useAppSelector } from '@/redux/hooks';
+import { auth } from '@/lib/firebase';
+import { signOut } from 'firebase/auth';
+import { setUser } from '@/redux/features/user/userSlice';
 
 export default function Navbar() {
+  const { user } = useAppSelector((state) => state.user);
+  const dispatch = useAppDispatch();
+  const handleLogout = () => {
+    console.log('logout');
+    signOut(auth).then(() => {
+      dispatch(setUser(null));
+    });
+  };
   return (
     <nav className="w-full h-16 fixed top backdrop-blur-lg z-10">
       <div className="h-full w-full bg-white/60">
@@ -38,16 +50,30 @@ export default function Navbar() {
                   <Link to="/checkout">Checkout</Link>
                 </Button>
               </li>
-              <li>
-                <Button variant="link" asChild>
-                  <Link to="/login">Login</Link>
-                </Button>
-              </li>
-              <li>
-                <Button variant="link" asChild>
-                  <Link to="/signup">Sign Up</Link>
-                </Button>
-              </li>
+              {!user.email && (
+                <>
+                  <li>
+                    <Button variant="link" asChild>
+                      <Link to="/login">Login</Link>
+                    </Button>
+                  </li>
+                  <li>
+                    <Button variant="link" asChild>
+                      <Link to="/signup">Sign Up</Link>
+                    </Button>
+                  </li>
+                </>
+              )}
+              {user.email && (
+                <>
+                  <li>
+                    <Button variant="link" onClick={() => handleLogout()}>
+                      LogOut
+                    </Button>
+                  </li>
+                </>
+              )}
+
               <li>
                 <Button variant="ghost">
                   <HiOutlineSearch size="25" />
@@ -72,6 +98,17 @@ export default function Navbar() {
                     </DropdownMenuItem>
                     <DropdownMenuItem className="cursor-pointer">
                       Billing
+                    </DropdownMenuItem>
+                    <DropdownMenuItem className="cursor-pointer">
+                      {user.email && (
+                        <Button
+                          onClick={() => handleLogout()}
+                          variant="link"
+                          asChild
+                        >
+                          Logout
+                        </Button>
+                      )}
                     </DropdownMenuItem>
                     <DropdownMenuItem className="cursor-pointer">
                       Team
