@@ -40,13 +40,19 @@ const userSlice=createSlice({
     extraReducers:(builder)=>{
         builder.addCase(createUser.pending,(state)=>{
             state.isLoading = true;
-        }).addCase(createUser.rejected,(state)=>{
+            state.isError = false;
+            state.error=null;
+        }).addCase(createUser.rejected,(state,action)=>{
+            state.user.email=null;
             state.isLoading=false;
             state.isError=true;
+            state.error=action.error.message!;
 
-        }).addCase(createUser.fulfilled,(state)=>{
+        }).addCase(createUser.fulfilled,(state,action)=>{
+            state.user.email=action.payload;
             state.isLoading=false;
             state.isError=false;
+            state.error=null;
         })
     }
     
