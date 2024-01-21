@@ -15,7 +15,7 @@ import { FiSend } from 'react-icons/fi';
 import {
   useGetCommentsQuery,
   usePostCommentMutation,
-} from '@/redux/api/apiSlice';
+} from '@/redux/features/products/productApi';
 
 interface IProps {
   id: string;
@@ -26,7 +26,10 @@ export default function ProductReview({ id }: IProps) {
 
   const [postComment, { isError, isLoading, isSuccess }] =
     usePostCommentMutation();
-  const { data } = useGetCommentsQuery(id);
+  const { data } = useGetCommentsQuery(id, {
+    refetchOnMountOrArgChange: true,
+    pollingInterval: 20000,
+  });
   console.log(isError);
   console.log(isLoading);
   console.log(isSuccess);
